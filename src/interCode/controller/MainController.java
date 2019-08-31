@@ -65,8 +65,13 @@ public class MainController implements Initializable{
     @FXML
     private void onSave(  ){
         List<String> newLines = Arrays.asList(textArea.getText().split("\n"));
+
+        for(String line : newLines){
+            System.out.println(line);
+        }
+
         try {
-            Files.write(file.toPath() , newLines , StandardOpenOption.CREATE);
+            Files.write(file.toPath() , newLines , StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
             e.printStackTrace();
         }
