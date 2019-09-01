@@ -8,36 +8,46 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="558.0" prefWidth="894.0" styleClass="mianWindow" stylesheets="@../style/mainWindow.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="interCode.controller.MainController" >
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="558.0" prefWidth="894.0" styleClass="mianWindow" stylesheets="@../style/mainWindow.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="interCode.controller.MainController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-                <MenuItem mnemonicParsing="false" text="Open" onAction="#onOpen" />
-                <MenuItem mnemonicParsing="false" text="Save" onAction="#onSave" />
-              <MenuItem mnemonicParsing="false" text="Close"  onAction="#onClose" />
+                <MenuItem mnemonicParsing="false" onAction="#onOpen" text="Open" />
+                <MenuItem mnemonicParsing="false" onAction="#onSave" text="Save" />
+              <MenuItem mnemonicParsing="false" onAction="#onClose" text="Close editor" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">
             <items>
-              <MenuItem mnemonicParsing="false" text="Delete" onAction="#onDelete" />
+              <MenuItem mnemonicParsing="false" onAction="#onDelete" text="Delete" />
             </items>
           </Menu>
+            <Menu mnemonicParsing="false" text="Build">
+                <items>
+                    <MenuItem mnemonicParsing="false" onAction="#onCompile" text="Compile" />
+                </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Run">
+                <items>
+                    <MenuItem mnemonicParsing="false" onAction="#onRun" text="Run" />
+                </items>
+            </Menu>
           <Menu mnemonicParsing="false" text="Help">
             <items>
-              <MenuItem mnemonicParsing="false" text="About" onAction="#onAbout" />
+              <MenuItem mnemonicParsing="false" onAction="#onAbout" text="About" />
             </items>
           </Menu>
         </menus>
       </MenuBar>
    </top>
    <center>
-      <SplitPane dividerPositions="0.6892655367231638" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" BorderPane.alignment="CENTER">
+      <SplitPane fx:id="verticalSplitPane" dividerPositions="0.6892655367231638" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" BorderPane.alignment="CENTER">
         <items>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                <children>
-                  <SplitPane dividerPositions="0.29797979797979796" layoutX="110.0" layoutY="81.0" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <SplitPane fx:id="horizontalSplitPane" dividerPositions="0.29797979797979796" layoutX="110.0" layoutY="81.0" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <items>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" styleClass="mianWindow" stylesheets="@../style/mainWindow.css" />
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">

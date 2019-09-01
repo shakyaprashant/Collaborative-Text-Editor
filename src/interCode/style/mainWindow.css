@@ -2,3 +2,8 @@
     -fx-background-color: #434343;
 
 }
+
+.menuBar {
+    -fx-text-fill: white;
+    -fx-background-color: #434342;
+}

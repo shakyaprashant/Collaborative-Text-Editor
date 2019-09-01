@@ -12,7 +12,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("views/mainWindow.fxml"));
         primaryStage.setTitle("interCode");
-        primaryStage.setScene(new Scene(root, 854, 558));
+        primaryStage.setScene(new Scene(root, 1000, 600));
         primaryStage.setMinHeight(558);
         primaryStage.setMinWidth(854);
         primaryStage.show();
