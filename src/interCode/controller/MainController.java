@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.nio.file.*;
 import interCode.utility.LineNumberingTextArea;
+import interCode.utility.LinePainter;
 
 public class MainController implements Initializable{
 
@@ -73,6 +74,8 @@ public class MainController implements Initializable{
                 lineNumberingTextArea.updateLineNumbers();
             }
         });
+
+        LinePainter linePainter = new LinePainter(textArea);   // highlight current line  ///
 
         swingNode.setContent(scrollPane);
         tab.setContent(swingNode);
