@@ -4,12 +4,12 @@ import javax.swing.*;
 import javax.swing.text.Element;
 import java.awt.*;
 
-public class LineNumberingTextArea extends JTextArea {
-    private JTextArea textArea;
+public class LineNumberingTextArea extends JTextPane {
+    private JTextPane textPane;
 
-    public LineNumberingTextArea(JTextArea textArea)
+    public LineNumberingTextArea(JTextPane textPane)
     {
-        this.textArea = textArea;
+        this.textPane = textPane;
         setBackground(Color.DARK_GRAY);
         setForeground(Color.lightGray);
         Font font = new Font("Serif", Font.PLAIN, 18);
@@ -27,8 +27,8 @@ public class LineNumberingTextArea extends JTextArea {
 
     private String getLineNumbersText()
     {
-        int caretPosition = textArea.getDocument().getLength();
-        Element root = textArea.getDocument().getDefaultRootElement();
+        int caretPosition = textPane.getDocument().getLength();
+        Element root = textPane.getDocument().getDefaultRootElement();
         StringBuilder lineNumbersTextBuilder = new StringBuilder();
         lineNumbersTextBuilder.append("1").append(System.lineSeparator());
 
@@ -39,4 +39,6 @@ public class LineNumberingTextArea extends JTextArea {
 
         return lineNumbersTextBuilder.toString();
     }
+
+
 }
