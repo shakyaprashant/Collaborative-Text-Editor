@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="273.0" prefWidth="560.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.WelcomeView">
+   <children>
+      <JFXTextField fx:id="documentName" layoutX="132.0" layoutY="114.0" prefHeight="31.0" prefWidth="317.0" />
+      <Label layoutX="193.0" layoutY="72.0" text="Enter a Document Name" />
+      <JFXButton fx:id="createButton" layoutX="116.0" layoutY="178.0" onAction="#onCreateClicked" text="Create" />
+      <JFXButton fx:id="openButton" layoutX="330.0" layoutY="178.0" onAction="#openDocumentClicked" text="Open Existing Document" />
+   </children>
+</AnchorPane>
