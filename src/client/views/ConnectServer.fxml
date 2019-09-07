@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.ConnectServer">
+   <children>
+      <JFXTextField fx:id="serverIPfield" layoutX="209.0" layoutY="113.0" />
+      <JFXTextField fx:id="portfield" layoutX="216.0" layoutY="185.0" />
+      <JFXButton fx:id="connectButton" layoutX="256.0" layoutY="260.0" onAction="#onClickConnect" text="Connect" />
+      <Label layoutX="63.0" layoutY="134.0" text="Server IP" />
+      <Label layoutX="75.0" layoutY="206.0" text="Port" />
+      <Label layoutX="249.0" layoutY="310.0" text="Connection Failed" textFill="#ee1414" visible="false" />
+   </children>
+</AnchorPane>
