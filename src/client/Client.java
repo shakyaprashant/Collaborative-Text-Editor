@@ -82,4 +82,11 @@ public class Client {
     public String getDocumentName() {
         return nameOfDocument;
     }
+    public int getPort() {
+        return port;
+    }
+
+    public String getHost() {
+        return host;
+    }
 }
