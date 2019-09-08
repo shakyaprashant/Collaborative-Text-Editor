@@ -4,6 +4,8 @@ import client.Client;
 import client.SceneController;
 import client.handlers.MessageSwingWorker;
 import client.utility.LineNumberingTextArea;
+import com.jfoenix.controls.JFXTextField;
+import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -11,8 +13,13 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import server.handlers.Encoding;
+import client.conversation.ConvClient;
+import client.conversation.ConvServer;
+import client.conversation.NetworkConnection;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -36,6 +43,8 @@ public class MainController implements Initializable{
     @FXML public TabPane bottomTabPane;
     @FXML public SplitPane verticalSplitPane;
     @FXML public SplitPane horizontalSplitPane;
+    @FXML private JFXTextField convInput;
+    @FXML private TextFlow convMessages;
     private TextFile textFile;
     private File file;
     private List<String > lines;
@@ -53,10 +62,20 @@ public class MainController implements Initializable{
     Client client;
     private int currentVersion;
     private boolean sent = false;
+    //chat
+    private boolean isInterviewer = false;
+    private NetworkConnection conversation = isInterviewer ? createConvServer() : createConvClient();
 
     @Override
     public void initialize(URL location , ResourceBundle resources){
-
+        //Chat
+        try {
+            conversation.startConnection();
+        }
+        catch (Exception e) {
+            System.out.println("Unable to start Conversation Connection");
+            e.printStackTrace();
+        }
         // initializing pane
         verticalSplitPane.setDividerPosition(0 , 0.8);
         horizontalSplitPane.setDividerPosition(0 , 0.2);
@@ -80,22 +99,6 @@ public class MainController implements Initializable{
         scrollPane.setRowHeaderView(lineNumberingTextArea);
         documentListener = new TextDocumentListener();
         textArea.getDocument().addDocumentListener(documentListener);
-//        textArea.getDocument().addDocumentListener(new DocumentListener() {
-//            @Override
-//            public void insertUpdate(DocumentEvent e) {
-//                lineNumberingTextArea.updateLineNumbers();
-//            }
-//
-//            @Override
-//            public void removeUpdate(DocumentEvent e) {
-//                lineNumberingTextArea.updateLineNumbers();
-//            }
-//
-//            @Override
-//            public void changedUpdate(DocumentEvent e) {
-//                lineNumberingTextArea.updateLineNumbers();
-//            }
-//        });
 
         swingNode.setContent(scrollPane);
         tab.setContent(swingNode);
@@ -258,6 +261,39 @@ public class MainController implements Initializable{
     private void onAbout(){
 
     }
+
+    // Chat
+    @FXML
+    public void convTextFieldActionPerformed(ActionEvent event) {
+        String message = isInterviewer ? "InterViewer: " : "Client";
+        message += convInput.getText();
+        convInput.clear();
+        Text text1 = new Text(message + "\n");
+        convMessages.getChildren().add(text1);
+
+        try {
+            conversation.send(message);
+        }
+        catch (Exception e) {
+            convMessages.getChildren().add(new Text("Failed to Send"));
+        }
+    }
+    private ConvClient createConvClient() {
+        return new ConvClient("localhost",5554,data -> {
+            Platform.runLater(() -> {
+                convMessages.getChildren().add(new Text(data.toString() + "\n"));
+            });
+        });
+    }
+    private ConvServer createConvServer() {
+        return new ConvServer(5554, data -> {
+            Platform.runLater(() -> {
+                convMessages.getChildren().add(new Text(data.toString() + "\n"));
+            });
+        });
+    }
+
+
     public void setSceneController(SceneController sceneController) {
         this.sceneController = sceneController;
         this.username = sceneController.getUsername();
