@@ -74,12 +74,30 @@ public class SyntexHighlight {
 
         try {
             ch = styledDocument.getText(i , 1).charAt(0);
-            // System.out.println("---->"+ch+"<-----");
+            if(ch == '{'){
+                insertchar('}' , i+1);
+                return ;
+            }
+            if(ch == '('){
+                insertchar(')' , i+1);
+                return;
+            }
+            if(ch == '['){
+                insertchar(']' , i+1);
+                return;
+            }
+            if(ch == '\"'){
+                insertchar('\"' , i+1);
+                return;
+            }
+            if(ch == '\''){
+                insertchar('\'' , i+1);
+                return;
+            }
             String tmp = "" ;
             j = i;
             while(j < len){
                 ch = styledDocument.getText(j , 1).charAt(0);
-                // System.out.print("+"+ch+"+");
                 if( ch >= 'a' && ch <= 'z' ){
                     tmp += ch;
                     j++;
@@ -100,7 +118,7 @@ public class SyntexHighlight {
                     break;
                 }
             }
-            System.out.println(tmp);
+            //System.out.println(tmp);
 
             final String str = tmp;
             int finalK = k;
@@ -122,6 +140,20 @@ public class SyntexHighlight {
             ex.printStackTrace();
         }
 
+    }
+
+
+    public void insertchar(final char ch ,final int pos){
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    styledDocument.insertString(pos ,""+ch , null);
+                } catch (BadLocationException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
 

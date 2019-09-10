@@ -1,10 +1,14 @@
 package interCode.controller;
 
+import interCode.utility.AutoSuggestion;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 
 import javax.swing.*;
@@ -38,6 +42,13 @@ public class MainController implements Initializable{
     private Tab newTab;
     private SwingNode swingNode ;
     private SyntexHighlight syntexHighlight ;
+    private AutoSuggestion autoSuggestion;
+
+    // chat variables //
+//    private  Tab chatTab;
+//    private VBox chatBox ;
+//    private ScrollPane chatScrollPane;
+//    private TextArea chatArea ;
 
     @Override
     public void initialize(URL location , ResourceBundle resources){
@@ -61,22 +72,26 @@ public class MainController implements Initializable{
         JScrollPane scrollPane = new JScrollPane(textPane);
         scrollPane.setRowHeaderView(lineNumberingTextArea);
 
+        autoSuggestion = new AutoSuggestion(textPane);  // auto suggestion in java
+
         textPane.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
                 lineNumberingTextArea.updateLineNumbers();
                 syntexHighlight.updateColor(e);
+                autoSuggestion.checkAndShowSuggestion(e);
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
                 lineNumberingTextArea.updateLineNumbers();
                 syntexHighlight.updateColor(e);
+                //autoSuggestion.checkAndShowSuggestion(e);
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                lineNumberingTextArea.updateLineNumbers();
+                //lineNumberingTextArea.updateLineNumbers();
                 //myDocumentListener.updateColor(e);
             }
         });
@@ -91,6 +106,15 @@ public class MainController implements Initializable{
         newTab = new Tab("+");
         newTab.setStyle(" -fx-font-weight: bold; ");
         editorTabPane.getTabs().add(newTab);
+
+
+
+//        // chat box init //
+//        chatTab = new Tab();
+//        chatTab.setText("Convo");
+//        chatBox = new VBox();
+//        chatScrollPane = new ScrollPane();
+//        chatArea = new TextArea();
 
 
     }
