@@ -30,11 +30,12 @@ public class LineNumberingTextArea extends JTextPane {
         int caretPosition = textPane.getDocument().getLength();
         Element root = textPane.getDocument().getDefaultRootElement();
         StringBuilder lineNumbersTextBuilder = new StringBuilder();
-        lineNumbersTextBuilder.append("1").append(System.lineSeparator());
+        lineNumbersTextBuilder.append(" 1 ").append(System.lineSeparator());
 
         for (int elementIndex = 2; elementIndex < root.getElementIndex(caretPosition) + 2; elementIndex++)
         {
-            lineNumbersTextBuilder.append(elementIndex).append(System.lineSeparator());
+            lineNumbersTextBuilder.append(" "+elementIndex+" ").append(System.lineSeparator());
+
         }
 
         return lineNumbersTextBuilder.toString();

@@ -36,7 +36,7 @@ public class AutoSuggestion {
         keywords = new Keywords();
         dictionary = new ArrayList<>();
         initDictionary();
-
+        addKeyBindingToRequestFocusInPopUpMenu();
     }
 
 
@@ -58,11 +58,13 @@ public class AutoSuggestion {
             boolean added = getMatchingWords();
             if(!added){
                 if(popupMenu.isVisible())
-                popupMenu.setVisible(true);
+                popupMenu.setVisible(false);
             }
             else{
                 popupMenu.show(textPane , X , Y+25);
                 popupMenu.setVisible(true);
+                //textPane.setCaretPosition(offset);
+                textPane.requestFocusInWindow();
 
             }
 
@@ -70,12 +72,14 @@ public class AutoSuggestion {
 
     }
 
+
     public void getCurrentlyTypedWord(DocumentEvent documentEvent){
 
         offset = documentEvent.getOffset();
         char ch = 0;
         try {
             ch = styledDocument.getText(offset , 1).charAt(0);
+            System.out.println(ch);
             if(Character.isLetter(ch) || Character.isDigit(ch) || ch == '_')
             {
                 int k = offset;
@@ -113,6 +117,7 @@ public class AutoSuggestion {
         for (String word : dictionary) {
             boolean fullymatches = true;
             for (int i = 0; i < typedWord.length(); i++) {
+                if( typedWord.length() > word.length()) continue;
                 if (!typedWord.toLowerCase().startsWith(String.valueOf(word.toLowerCase().charAt(i)), i)) {
                     fullymatches = false;
                     break;
@@ -140,23 +145,38 @@ public class AutoSuggestion {
         }
     };
 
-    KeyListener popupMenuKeyListener = new KeyListener() {
-        @Override
-        public void keyTyped(KeyEvent e) {
-            System.out.println(e.getKeyChar());
-        }
+//    KeyListener popupMenuKeyListener = new KeyListener() {
+//        @Override
+//        public void keyTyped(KeyEvent e) {
+//            System.out.println(e.getKeyChar());
+//        }
+//
+//        @Override
+//        public void keyPressed(KeyEvent e) {
+//            System.out.println(e.getKeyChar());
+//        }
+//
+//        @Override
+//        public void keyReleased(KeyEvent e) {
+//            System.out.println(e.getKeyChar());
+//
+//        }
+//    };
 
-        @Override
-        public void keyPressed(KeyEvent e) {
-            System.out.println(e.getKeyChar());
-        }
+    public void addKeyBindingToRequestFocusInPopUpMenu(){
+        textPane.getInputMap(textPane.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN ,0 , true) , "Down released");
+        textPane.getActionMap().put("Down released", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(!popupMenu.isVisible()){
+                    return;
+                }
+                //System.out.println("down key pressed...");
+                startFocusingPopupMenu();
 
-        @Override
-        public void keyReleased(KeyEvent e) {
-            System.out.println(e.getKeyChar());
-
-        }
-    };
+            }
+        });
+    }
 
     public void insertcWord(String word  ,String typedWord,int x){
         String tmp = removePrefix(word , typedWord);
@@ -170,6 +190,7 @@ public class AutoSuggestion {
                 }
             }
         });
+
     }
 
     public String removePrefix(String s, String prefix)
@@ -180,11 +201,20 @@ public class AutoSuggestion {
         return s;
     }
 
+    public void startFocusingPopupMenu(){
+        //System.out.println("insdide focus");
+        popupMenu.setVisible(false);
+        popupMenu.setVisible(true);
+
+    }
+
 
     public void initDictionary(){
         for(String s : keywords.map_c.keySet()){
             dictionary.add(s);
         }
     }
+
+
 
 }

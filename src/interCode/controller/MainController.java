@@ -6,6 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.fxml.Initializable;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
@@ -34,6 +35,7 @@ public class MainController implements Initializable{
     @FXML public TabPane bottomTabPane;
     @FXML public SplitPane verticalSplitPane;
     @FXML public SplitPane horizontalSplitPane;
+    @FXML public MenuBar menuBar;
     private TextFile textFile;
     private File file;
     private List<String > lines;
@@ -72,7 +74,9 @@ public class MainController implements Initializable{
         JScrollPane scrollPane = new JScrollPane(textPane);
         scrollPane.setRowHeaderView(lineNumberingTextArea);
 
+
         autoSuggestion = new AutoSuggestion(textPane);  // auto suggestion in java
+        textPane.setText("");
 
         textPane.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -106,6 +110,16 @@ public class MainController implements Initializable{
         newTab = new Tab("+");
         newTab.setStyle(" -fx-font-weight: bold; ");
         editorTabPane.getTabs().add(newTab);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    textPane.getStyledDocument().insertString(0 ," " , null);
+                } catch (BadLocationException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
 
 
@@ -116,11 +130,12 @@ public class MainController implements Initializable{
 //        chatScrollPane = new ScrollPane();
 //        chatArea = new TextArea();
 
-
+        //menuBar.setStyle(" -fx-background-color: #434342; ");
     }
 
     @FXML
     private void onOpen() {
+
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File("./"));
         file = fileChooser.showOpenDialog(null);

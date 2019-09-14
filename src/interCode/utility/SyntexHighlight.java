@@ -74,8 +74,13 @@ public class SyntexHighlight {
 
         try {
             ch = styledDocument.getText(i , 1).charAt(0);
+//            if(ch == '}'){
+//
+//                textPane.setCaretPosition(curr_ind-1);
+//            }
             if(ch == '{'){
                 insertchar('}' , i+1);
+
                 return ;
             }
             if(ch == '('){
