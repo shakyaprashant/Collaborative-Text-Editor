@@ -1,6 +1,8 @@
 package client.controllers;
 
 import client.Client;
+import client.CompileAndRun.CompileAndRun;
+import client.CompileAndRun.CompileAndRunCPP;
 import client.SceneController;
 import client.handlers.MessageSwingWorker;
 import client.utility.LineNumberingTextArea;
@@ -9,13 +11,17 @@ import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import server.handlers.Encoding;
 import client.conversation.ConvClient;
 import client.conversation.ConvServer;
@@ -36,6 +42,13 @@ import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
+
+/**
+ * Enum for Programming Languages
+ */
+enum Language {
+    C,CPP,JAVA,PYTHON;
+}
 
 public class MainController implements Initializable{
 
@@ -62,10 +75,22 @@ public class MainController implements Initializable{
     Client client;
     private int currentVersion;
     private boolean sent = false;
+    Language languageSelected;
     //chat
     private boolean isInterviewer = false;
     private NetworkConnection conversation = isInterviewer ? createConvServer() : createConvClient();
+    // CompileAndRun
+    private CompileAndRun compileAndRun;
+    String stdin ;
+    @FXML
+    private TextFlow outputTextFlow;
 
+    /**
+     * Creates a Swing textarea and Swing ScrollPane. To make it work inside JavaFx it creates a swingnode
+     * and puts scrollpane inside it.
+     * @param location
+     * @param resources
+     */
     @Override
     public void initialize(URL location , ResourceBundle resources){
         //Chat
@@ -86,7 +111,7 @@ public class MainController implements Initializable{
         tab.setStyle(" -fx-font-weight: bold; ");
         Font font = new Font("Serif", Font.PLAIN, 18);
         textArea.setFont(font);
-        textArea.setForeground(Color.DARK_GRAY);
+        //textArea.setForeground(Color.DARK_GRAY);
         textArea.setBackground(Color.WHITE);
         textArea.setTabSize(4);
 
@@ -97,6 +122,7 @@ public class MainController implements Initializable{
 
         JScrollPane scrollPane = new JScrollPane(textArea);
         scrollPane.setRowHeaderView(lineNumberingTextArea);
+
         documentListener = new TextDocumentListener();
         textArea.getDocument().addDocumentListener(documentListener);
 
@@ -108,6 +134,10 @@ public class MainController implements Initializable{
         editorTabPane.getTabs().add(newTab);
 
     }
+
+    /**
+     * Document Listener for the Text Area
+     */
     private class TextDocumentListener implements DocumentListener {
 
         @Override
@@ -250,22 +280,78 @@ public class MainController implements Initializable{
     }
 
     @FXML
-    public void onCompile(ActionEvent actionEvent) {
-    }
-
-    @FXML
     public void onRun(ActionEvent actionEvent) {
+        //Getting Standard Input
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("../views/StdinInputWindow.fxml"));
+        try {
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            Stage inputStage = new Stage();
+            inputStage.initOwner(sceneController.getStage());
+            inputStage.setScene(scene);
+            inputStage.showAndWait();
+            stdin =  loader.<StdinInputController>getController().getStdin();
+            System.out.println("Stdin is - " + stdin);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        //Running code
+        if(languageSelected == Language.CPP)
+        {
+            compileAndRun = new CompileAndRunCPP(textArea.getText(),stdin);
+//            Thread thread = new Thread() {
+//
+//                @Override
+//                public void run() {
+//                    compileAndRun.run();
+//                }
+//            };
+//            try {
+//                thread.wait();
+//            }
+//            catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+            compileAndRun.run();
+            System.out.println(compileAndRun.getCompileOutput());
+            System.out.println(compileAndRun.getRunOutput());
+            //outputTextFlow.setText(compileAndRun.getCompileOutput() + "\n" + compileAndRun.getRunOutput());
+            Text compileoutput = new Text(compileAndRun.getCompileOutput());
+            Text runoutput = new Text(compileAndRun.getRunOutput());
+            outputTextFlow.getChildren().clear();
+            outputTextFlow.getChildren().addAll(compileoutput,runoutput);
+        }
     }
 
     @FXML
     private void onAbout(){
 
     }
+    @FXML
+    void setLanguageToC(ActionEvent event) {
+        languageSelected = Language.C;
+    }
+
+    @FXML
+    void setLanguageToCPP(ActionEvent event) {
+        languageSelected = Language.CPP;
+    }
+
+    @FXML
+    void setLanguageToJava(ActionEvent event) {
+        languageSelected = Language.JAVA;
+    }
+
+    @FXML
+    void setLanguageToPython(ActionEvent event) {
+        languageSelected = Language.PYTHON;
+    }
 
     // Chat
     @FXML
     public void convTextFieldActionPerformed(ActionEvent event) {
-        String message = isInterviewer ? "InterViewer: " : "Client";
+        String message = isInterviewer ? "InterViewer: " : "Client: ";
         message += convInput.getText();
         convInput.clear();
         Text text1 = new Text(message + "\n");
@@ -304,6 +390,8 @@ public class MainController implements Initializable{
     }
     public void setDocumentText(String documentText) {
         this.documentText = Encoding.decode(documentText);
+        textArea.getDocument().removeDocumentListener(documentListener);
         textArea.setText(this.documentText);
+        textArea.getDocument().addDocumentListener(documentListener);
     }
 }
