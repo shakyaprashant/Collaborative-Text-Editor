@@ -2,9 +2,9 @@ package client.CompileAndRun;
 
 import java.io.FileWriter;
 
-public class CompileAndRunCPP implements CompileAndRun {
+public class CompileAndRunC implements CompileAndRun {
     private String programCode=null,programInput = null,compileOutput= null,runOutput=null,compileError=null,runError=null;
-    public CompileAndRunCPP(String programCode, String programInput) {
+    public CompileAndRunC(String programCode, String programInput) {
         setProgramCode(programCode);
         setInput(programInput);
     }
@@ -62,7 +62,7 @@ public class CompileAndRunCPP implements CompileAndRun {
             runCommand.append("sh -c ./out < temp.inp");
         }
 
-        compileCommand.append("g++ " + currDir + "/temp.cpp " + "-o out");
+        compileCommand.append("gcc " + currDir + "/temp.cpp " + "-o out");
 
         Executor executor = new Executor(compileCommand.toString(),runCommand.toString());
         executor.compileAndRun();

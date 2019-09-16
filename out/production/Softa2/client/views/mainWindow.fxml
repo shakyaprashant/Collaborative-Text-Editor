@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXTabPane?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.RadioMenuItem?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
@@ -30,10 +30,13 @@
               <MenuItem mnemonicParsing="false" onAction="#onDelete" text="Delete" />
             </items>
           </Menu>
-            <Menu mnemonicParsing="false" text="Build">
-                <items>
-                    <MenuItem mnemonicParsing="false" onAction="#onCompile" text="Compile" />
-                </items>
+            <Menu mnemonicParsing="false" text="Language">
+               <items>
+                  <RadioMenuItem mnemonicParsing="false" onAction="#setLanguageToC" text="C" />
+                  <RadioMenuItem mnemonicParsing="false" onAction="#setLanguageToCPP" text="C++" />
+                  <RadioMenuItem mnemonicParsing="false" onAction="#setLanguageToJava" text="Java" />
+                  <RadioMenuItem mnemonicParsing="false" onAction="#setLanguageToPython" text="Python" />
+               </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Run">
                 <items>
@@ -42,6 +45,7 @@
             </Menu>
           <Menu mnemonicParsing="false" text="Help">
             <items>
+                  <Menu mnemonicParsing="false" />
               <MenuItem mnemonicParsing="false" onAction="#onAbout" text="About" />
             </items>
           </Menu>
@@ -66,12 +70,15 @@
             </AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                <children>
-                  <JFXTabPane prefHeight="159.0" prefWidth="892.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                     <tabs>
-                        <Tab closable="false" text="Output">
-                          <content>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                          </content>
+                  <TabPane prefHeight="159.0" prefWidth="892.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <tabs>
+                        <Tab fx:id="outputTextArea" closable="false" text="Output">
+                           <graphic>
+                              <VBox prefHeight="200.0" prefWidth="100.0" />
+                           </graphic>
+                           <content>
+                              <TextFlow fx:id="outputTextFlow" prefHeight="200.0" prefWidth="200.0" />
+                           </content>
                         </Tab>
                         <Tab closable="false" text="Conversation">
                            <content>
@@ -87,8 +94,8 @@
                               </VBox>
                            </content>
                         </Tab>
-                     </tabs>
-                  </JFXTabPane>
+                    </tabs>
+                  </TabPane>
                </children></AnchorPane>
         </items>
       </SplitPane>

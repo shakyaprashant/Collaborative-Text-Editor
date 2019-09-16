@@ -2,9 +2,9 @@ package client.CompileAndRun;
 
 import java.io.FileWriter;
 
-public class CompileAndRunCPP implements CompileAndRun {
+public class CompileAndRunJava implements CompileAndRun {
     private String programCode=null,programInput = null,compileOutput= null,runOutput=null,compileError=null,runError=null;
-    public CompileAndRunCPP(String programCode, String programInput) {
+    public CompileAndRunJava(String programCode, String programInput) {
         setProgramCode(programCode);
         setInput(programInput);
     }
@@ -38,7 +38,7 @@ public class CompileAndRunCPP implements CompileAndRun {
     public void run() {
 
         try {
-            FileWriter fw = new FileWriter("temp.cpp");
+            FileWriter fw = new FileWriter("Main.java");
             fw.write(programCode);
             fw.close();
             fw = new FileWriter("temp.inp");
@@ -46,7 +46,7 @@ public class CompileAndRunCPP implements CompileAndRun {
             fw.close();
         }
         catch (Exception e) {
-            System.out.println("Exception in writing to temp.code");
+            System.out.println("Exception in writing to temp.java" + e);
         }
 
         StringBuilder compileCommand = new StringBuilder();
@@ -55,14 +55,14 @@ public class CompileAndRunCPP implements CompileAndRun {
         String currDir = System.getProperty("user.dir");
         if(isWindows) {
             compileCommand.append("cmd.exe /c ");
-            runCommand.append("cmd /c out < temp.inp");
+            runCommand.append("cmd /c java Main < temp.inp");
         }
         else {
             compileCommand.append("sh -c ");
-            runCommand.append("sh -c ./out < temp.inp");
+            runCommand.append("sh -c java Main < temp.inp");
         }
 
-        compileCommand.append("g++ " + currDir + "/temp.cpp " + "-o out");
+        compileCommand.append("javac " + currDir + "/Main.java");
 
         Executor executor = new Executor(compileCommand.toString(),runCommand.toString());
         executor.compileAndRun();

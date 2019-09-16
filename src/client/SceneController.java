@@ -12,11 +12,16 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.TextInputDialog;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 
+/**
+ * This Class changes scenes on the main stage. Class contains several methods, when called changes
+ * the scene.
+ */
 public class SceneController extends Application {
 
     private Client client;
@@ -24,6 +29,11 @@ public class SceneController extends Application {
     private Stage window;
     private MainController documentView;
 
+    /**
+     * This loads the Connect Server scene for the input of IP and port of server.
+     * @param primaryStage
+     * @throws Exception
+     */
     @Override
     public void start(Stage primaryStage) throws Exception{
         window = primaryStage;
@@ -37,6 +47,9 @@ public class SceneController extends Application {
         window.show();
     }
 
+    /**
+     * Opens Username Dialog Box for username input.
+     */
     public void openUsernameDialog() {
         System.out.println("Trying to Open Username Dialog");
         TextInputDialog dialog = new TextInputDialog("Username");
@@ -54,6 +67,10 @@ public class SceneController extends Application {
             System.out.println("Username Not Entered");
         }
     }
+
+    /**
+     * Opens scene for creating a new document.
+     */
     public void switchToWelcomeView() {
         //window.hide();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("views/WelcomeView.fxml"));
@@ -81,18 +98,35 @@ public class SceneController extends Application {
         a1.setHeaderText(null);
         a1.showAndWait();
     }
+
+    /**
+     * main method of client
+     * @param args
+     */
     public static void main(String[] args) {
         launch(args);
     }
-    
+
+    /**
+     * Setter for Client
+     * @param client
+     */
     public void setClient(Client client) {
         this.client = client;
     }
 
+    /**
+     * Setter for username
+     * @param username
+     */
     public void setUsername(String username) {
         this.username = username;
     }
 
+    /**
+     * Opens a dialog with a dropdown list of documents to open.
+     * @param documentNames documents currently on the server
+     */
     public void displayOpenDocuments(ArrayList<String> documentNames) {
         System.out.println("switching to open existing document view");
         if(documentNames == null) {
@@ -109,6 +143,11 @@ public class SceneController extends Application {
         result.ifPresent(s -> client.sendMessageToServer("open " + s));
     }
 
+    /**
+     * Opens the MainWindow which contains the document.
+     * @param documentName Document Name
+     * @param documentText  Initial Document Text
+     */
     public void switchToDocumentView(String documentName, String documentText) {
         System.out.println("Trying to Switch to Document View");
         window.hide();
@@ -129,6 +168,14 @@ public class SceneController extends Application {
         System.out.println("Switching to Document View");
     }
 
+    /**
+     * Calls method in mainwindow to update document with changes sent from server.
+     * @param documentText Document Text
+     * @param editPosition
+     * @param editLength
+     * @param username
+     * @param version
+     */
     public void updateDocument(String documentText,int editPosition,
                                int editLength, String username,int version)
     {
@@ -137,11 +184,28 @@ public class SceneController extends Application {
             documentView.updateDocument(documentText,editPosition, editLength,
                     username,version);
     }
+
+    /**
+     * Getter for Username
+     * @return username
+     */
     public String getUsername() {
         return username;
     }
 
+    /**
+     * Getter for Client
+     * @return client
+     */
     public Client getClient() {
         return client;
+    }
+
+    /**
+     * Getter for primary stage
+     * @return stage
+     */
+    public Window getStage() {
+        return window;
     }
 }

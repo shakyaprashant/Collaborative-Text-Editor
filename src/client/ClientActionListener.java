@@ -17,8 +17,6 @@ import java.util.regex.Pattern;
  * Listens for the update from the server, and handles the message from the
  * server.
  *
- * @author LLPadmin
- *
  */
 public class ClientActionListener extends Thread{
 
@@ -51,7 +49,6 @@ public class ClientActionListener extends Thread{
 
     /**
      * listens for server updates and handle the message
-     * @throws IOException
      */
     @Override
     public void run(){
@@ -60,7 +57,7 @@ public class ClientActionListener extends Thread{
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             for (String line = in.readLine(); line != null; line = in.readLine()) {
                 final String input = line;
-                Platform.runLater(new Runnable() {
+                Platform.runLater(new Runnable() { // To allow run method to make changes in JavaFx main thread
                     @Override
                     public void run() {
                         handleMessageFromServer(input);
@@ -68,7 +65,7 @@ public class ClientActionListener extends Thread{
                 });
                 //System.out.println("Server Sent-" + line);
             }
-            System.out.println("Out");
+           // System.out.println("Out");
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -87,7 +84,7 @@ public class ClientActionListener extends Thread{
      * Handle the message from the server by updating the GUI and the nameOfDocument, textOfDocument as well
      *
      * Server-to-Client Message Protocol
-     * message :== (Error|Alldocs | Newdocument | Opendocument | ChangeText)
+     * message :== (Error| alldocs | Newdocument | Opendocument | ChangeText)
      * Error :== error [1-6] .+
      * Alldocs :== "alldocs " DocumentName
      * Newdocument:=="new " DocumentName

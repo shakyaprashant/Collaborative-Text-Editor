@@ -6,53 +6,44 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class Executor {
-    private String command = null,programCode,programInput;
+    private String compileCommand = null,runCommand = null;
     private StringBuilder compileOutput= new StringBuilder(),runOutput=new StringBuilder(),compileError = new StringBuilder(),runError= new StringBuilder();
-    public Executor(String command,String programCode,String programInput) {
-        this.command = command;
-        this.programCode = programCode;
-        this.programInput = programInput;
+    public Executor(String command,String runCommand) {
+        this.compileCommand = command;
+        this.runCommand = runCommand;
     }
 
     public void compileAndRun() {
-        try {
-            FileWriter fw = new FileWriter("temp.cpp");
-            fw.write(programCode);
-            fw.close();
-            fw = new FileWriter("temp.inp");
-            fw.write(programInput);
-            fw.close();
-        }
-        catch (Exception e) {
-            System.out.println("Exception in writing to temp.code");
-        }
         //compile
         int compileStatus=0;
-        try {
-            ProcessBuilder builder = new ProcessBuilder();
-            builder.redirectErrorStream(true);
-            builder.command(command.split(" "));
-            Process process =builder.start();
-            //Process process = Runtime.getRuntime().exec(command);
-
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                compileOutput.append(line + "\n");
-            }
-            reader.close();
+        if(compileCommand != null)
+        {
             try {
-                System.out.println("Waiting for Compilation");
-                compileStatus= process.waitFor();
-                System.out.println("Compilation Complete");
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
+                ProcessBuilder builder = new ProcessBuilder();
+                builder.redirectErrorStream(true);
+                builder.command(compileCommand.split(" "));
+                Process process =builder.start();
+                //Process process = Runtime.getRuntime().exec(command);
 
-        } catch (IOException e) {
-            System.out.println("Exception during Compile in Executor");
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(process.getInputStream()));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    compileOutput.append(line + "\n");
+                }
+                reader.close();
+                try {
+                    System.out.println("Waiting for Compilation");
+                    compileStatus= process.waitFor();
+                    System.out.println("Compilation Complete");
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            } catch (IOException e) {
+                System.out.println("Exception during Compile in Executor");
+            }
         }
         //Run
         if(compileStatus == 0)
@@ -60,7 +51,7 @@ public class Executor {
             try {
                 ProcessBuilder builder = new ProcessBuilder();
                 builder.redirectErrorStream(true);
-                builder.command("cmd /c out < temp.inp".split(" "));
+                builder.command(runCommand.split(" "));
                 Process process =builder.start();
 //                Process process = Runtime.getRuntime().exec("cmd.exe /c ./out < temp.inp");
                 BufferedReader reader = new BufferedReader(

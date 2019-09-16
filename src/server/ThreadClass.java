@@ -10,14 +10,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 
-/**
- *
- * The OurThreadClass takes care of making a new thread that handles one client
- * connection. While the thread is running, it could listens for the client
- * messages, handles the message, and send back the server message to the
- * client. For testing strategy, please see OurThreadClassTest.java.
- *
- */
+
 public class ThreadClass extends Thread {
 
     private static final boolean DEBUG = true;
@@ -35,30 +28,14 @@ public class ThreadClass extends Thread {
     private final String error7 = "Error: Username is not available";
     private final boolean sleep = false; // for debugging
 
-    /**
-     * Constructor for the thread object
-     *
-     * @param socket
-     *            the socket to connect with the server
-     * @param server
-     *            the server that the client is trying to communicate with
-     * @param alive
-     *            a boolean that represents whether the client has disconnected
-     */
+
     public ThreadClass(Socket socket, Server server) {
         this.socket = socket;
         this.server = server;
         this.alive = true;
     }
 
-    /**
-     * Run the server, listening for client connections and handling them. Never
-     * returns unless an exception is thrown.
-     *
-     * @throws IOException
-     *             if the main server socket is broken (IOExceptions from
-     *             individual clients do *not* terminate serve()).
-     */
+
     // thread object need to have "run" method
     public void run() {
         try {
@@ -68,31 +45,7 @@ public class ThreadClass extends Thread {
     }
 
 
-    /**
-     * Handle a single client connection. Returns when client disconnects.
-     *
-     * Server-to-Client Message Protocol
-     * message :== (Error|Alldocs |Newdocument | Opendocument | ChangeText| Name)
-     * Error :== Error: .+
-     * Alldocs:== "alldocs " DocumentName
-     * Newdocument:=="new " DocumentName
-     * Opendocument:=="open " DocumentName UserName Version DocumentText
-     * ChangeText:=="change " DocumentName UserName Version ChangePosition ChangeLength DocumentText
-     * Name:== name UserName
-     * UserName :== Chars
-     * Version :== Int+
-     * ChangePosition :== Int+
-     * ChangeLength:== -?Int+
-     * DocumentName:==Chars
-     * DocumentText:==.+
-     * Chars:== [\\w\\d]
-     * Int:==[0-9]
-     *
-     * @param socket
-     *            socket where the client is connected
-     * @throws IOException
-     *             if connection has an error or terminates unexpectedly
-     */
+
     private void handleConnection(Socket socket) throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(
                 socket.getInputStream()));
@@ -102,7 +55,7 @@ public class ThreadClass extends Thread {
             for (String line = in.readLine(); line != null; line = in
                     .readLine()) {
                 String output = handleRequest(line);
-                // for debugging only:
+
                 if (sleep) {
                     try {
                         Thread.sleep(1000);
@@ -137,32 +90,7 @@ public class ThreadClass extends Thread {
     }
 
 
-    /**
-     * handler for client input. Our grammar:
-     * Message :== Edit | Open | New | Look| Bye |Name
-     * Edit :== change DocumentName Username Version (Remove|Insert)
-     * Remove :==remove Position Position
-     * Insert :== insert Chars Position
-     * Open:== open DocumentName
-     * New :== new DocumentName
-     * Look :== look
-     * Bye::=="bye"
-     * Name ::== name Username
-     * Username ::== Chars
-     * Chars:==.+
-     * Position :== Int
-     * DocumentName :== Chars
-     * Chars ::== \\d\\w
-     * Version :== [0-9]+
-     * Int :== [0-9]
-     *
-     * make requested mutations on documenMap of the server if applicable, then
-     * return appropriate message to the user.
-     *
-     * @param input
-     *            the string that is the request coming from the client
-     * @return the string that is the returning message to the user
-     */
+
 
     public String handleRequest(String input) {
         if (!alive) {
@@ -315,15 +243,7 @@ public class ThreadClass extends Thread {
     }
 
 
-    /**
-     * Generate an return message from the arguments given according to the grammar.
-     * @param documentName  a string that is the name of the document
-     * @param version       an integer that is the version of the document
-     * @param offset        an integer that is the starting position of the change
-     * @param changeLength  an integer that is the length of the text client changes
-     * @param documentText  the string that is the entire text of the document.
-     * @return
-     */
+
     private String createMessage(String documentName, String username, int version, int offset,
                                  int changeLength, String documentText) {
         String message = "change " + documentName + " " +username+" "+ version + " "
@@ -332,28 +252,15 @@ public class ThreadClass extends Thread {
     }
 
 
-    /**
-     * return the socket of the client
-     * @return socket, the socket of the client
-     */
     public Socket getSocket() {
         return socket;
     }
 
-    /**
-     *return the userName of the client for this thread
-     * @return userName
-     */
+
     public String getUsername() {
         return username;
     }
 
-
-    /**
-     * return private boolean field alive
-     * @return alive, a boolean that represents if a client exits and
-     *         disconnects.
-     */
     public boolean getAlive() {
         return alive;
     }
