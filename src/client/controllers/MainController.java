@@ -1,8 +1,7 @@
 package client.controllers;
 
 import client.Client;
-import client.CompileAndRun.CompileAndRun;
-import client.CompileAndRun.CompileAndRunCPP;
+import client.CompileAndRun.*;
 import client.SceneController;
 import client.handlers.MessageSwingWorker;
 import client.utility.LineNumberingTextArea;
@@ -62,7 +61,7 @@ public class MainController implements Initializable{
     private File file;
     private List<String > lines;
     private JTextArea textArea;
-    private Tab tab;
+    private Tab tab1;
     private Tab newTab;
     private SwingNode swingNode ;
     private SceneController sceneController;
@@ -107,8 +106,8 @@ public class MainController implements Initializable{
 
         swingNode = new SwingNode();
         textArea = new JTextArea();
-        tab = new Tab("Untitled");
-        tab.setStyle(" -fx-font-weight: bold; ");
+        tab1 = new Tab("Untitled");
+        tab1.setStyle(" -fx-font-weight: bold; ");
         Font font = new Font("Serif", Font.PLAIN, 18);
         textArea.setFont(font);
         //textArea.setForeground(Color.DARK_GRAY);
@@ -127,8 +126,8 @@ public class MainController implements Initializable{
         textArea.getDocument().addDocumentListener(documentListener);
 
         swingNode.setContent(scrollPane);
-        tab.setContent(swingNode);
-        editorTabPane.getTabs().add(tab);
+        tab1.setContent(swingNode);
+        editorTabPane.getTabs().add(tab1);
         newTab = new Tab("+");
         newTab.setStyle(" -fx-font-weight: bold; ");
         editorTabPane.getTabs().add(newTab);
@@ -139,7 +138,10 @@ public class MainController implements Initializable{
      * Document Listener for the Text Area
      */
     private class TextDocumentListener implements DocumentListener {
-
+        /**
+         * Listenes for the insert updates in the document and Creates a change message to send to server.
+         * @param e
+         */
         @Override
         public void insertUpdate(DocumentEvent e) {
             lineNumberingTextArea.updateLineNumbers();
@@ -164,6 +166,10 @@ public class MainController implements Initializable{
             }
         }
 
+        /**
+         * Listens for removal of text in document and creates a change message to send to server.
+         * @param e document event
+         */
         @Override
         public void removeUpdate(DocumentEvent e) {
             lineNumberingTextArea.updateLineNumbers();
@@ -192,6 +198,12 @@ public class MainController implements Initializable{
         }
     }
 
+    /**
+     * Moves the Caret position.
+     * @param currentPos
+     * @param pivotPosition
+     * @param amount
+     */
     private void manageCursor(int currentPos, int pivotPosition, int amount) {
 
             System.out.println("first position: "+caret.getDot());
@@ -212,6 +224,14 @@ public class MainController implements Initializable{
         System.out.println("caret moved to: "+caret.getDot());
     }
 
+    /**
+     * Updates the document according to the changes sent by the server.
+     * @param updatedText
+     * @param editPosition
+     * @param editLength
+     * @param username
+     * @param version
+     */
     public void updateDocument(String updatedText, int editPosition,
                                int editLength, String username, int version) {
         documentText = Encoding.decode(updatedText);
@@ -251,7 +271,7 @@ public class MainController implements Initializable{
         }
 
         textArea.setText("");
-        tab.setText(file.getName());
+        tab1.setText(file.getName());
         for(String line : lines){
             textArea.append(line+"\n");
         }
@@ -279,6 +299,10 @@ public class MainController implements Initializable{
         file.deleteOnExit();
     }
 
+    /**
+     * This method is executed when run menu option is clicked. Opens a new window for input of stdin.
+     * @param actionEvent
+     */
     @FXML
     public void onRun(ActionEvent actionEvent) {
         //Getting Standard Input
@@ -300,55 +324,76 @@ public class MainController implements Initializable{
         if(languageSelected == Language.CPP)
         {
             compileAndRun = new CompileAndRunCPP(textArea.getText(),stdin);
-//            Thread thread = new Thread() {
-//
-//                @Override
-//                public void run() {
-//                    compileAndRun.run();
-//                }
-//            };
-//            try {
-//                thread.wait();
-//            }
-//            catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
             compileAndRun.run();
-            System.out.println(compileAndRun.getCompileOutput());
-            System.out.println(compileAndRun.getRunOutput());
-            //outputTextFlow.setText(compileAndRun.getCompileOutput() + "\n" + compileAndRun.getRunOutput());
-            Text compileoutput = new Text(compileAndRun.getCompileOutput());
-            Text runoutput = new Text(compileAndRun.getRunOutput());
-            outputTextFlow.getChildren().clear();
-            outputTextFlow.getChildren().addAll(compileoutput,runoutput);
         }
+        else if(languageSelected == Language.JAVA)
+        {
+            compileAndRun = new CompileAndRunJava(textArea.getText(),stdin);
+            compileAndRun.run();
+        }
+        else if(languageSelected == Language.PYTHON)
+        {
+            compileAndRun = new CompileAndRunPython(textArea.getText(),stdin);
+            compileAndRun.run();
+        }
+        else if(languageSelected == Language.C)
+        {
+            compileAndRun = new CompileAndRunC(textArea.getText(),stdin);
+            compileAndRun.run();
+        }
+        System.out.println(compileAndRun.getCompileOutput());
+        System.out.println(compileAndRun.getRunOutput());
+        Text compileoutput = new Text(compileAndRun.getCompileOutput() + "\n");
+        compileoutput.setFill(javafx.scene.paint.Color.RED);
+        Text runoutput = new Text(compileAndRun.getRunOutput());
+        outputTextFlow.getChildren().clear();
+        outputTextFlow.getChildren().addAll(compileoutput,runoutput);
     }
 
     @FXML
     private void onAbout(){
 
     }
+
+    /**
+     * Sets document programming language to C
+     * @param event
+     */
     @FXML
     void setLanguageToC(ActionEvent event) {
         languageSelected = Language.C;
     }
-
+    /**
+     * Sets document programming language to C++
+     * @param event
+     */
     @FXML
     void setLanguageToCPP(ActionEvent event) {
         languageSelected = Language.CPP;
     }
-
+    /**
+     * Sets document programming language to Java
+     * @param event
+     */
     @FXML
     void setLanguageToJava(ActionEvent event) {
         languageSelected = Language.JAVA;
     }
-
+    /**
+     * Sets document programming language to Python
+     * @param event
+     */
     @FXML
     void setLanguageToPython(ActionEvent event) {
         languageSelected = Language.PYTHON;
     }
 
     // Chat
+
+    /**
+     * method executes when user presses enters on conversation text field;
+     * @param event
+     */
     @FXML
     public void convTextFieldActionPerformed(ActionEvent event) {
         String message = isInterviewer ? "InterViewer: " : "Client: ";
@@ -364,6 +409,7 @@ public class MainController implements Initializable{
             convMessages.getChildren().add(new Text("Failed to Send"));
         }
     }
+
     private ConvClient createConvClient() {
         return new ConvClient("localhost",5554,data -> {
             Platform.runLater(() -> {
@@ -385,9 +431,20 @@ public class MainController implements Initializable{
         this.username = sceneController.getUsername();
         this.client = sceneController.getClient();
     }
+
+    /**
+     * Setter for document name.
+     * @param documentName
+     */
     public void setDocumentName(String documentName) {
         this.documentName = documentName;
+        tab1.setText(documentName);
     }
+
+    /**
+     * Setter for document Text. Updates the Document text directly;
+     * @param documentText
+     */
     public void setDocumentText(String documentText) {
         this.documentText = Encoding.decode(documentText);
         textArea.getDocument().removeDocumentListener(documentListener);
