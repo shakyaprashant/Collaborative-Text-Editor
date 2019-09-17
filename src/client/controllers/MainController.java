@@ -4,7 +4,7 @@ import client.Client;
 import client.CompileAndRun.*;
 import client.SceneController;
 import client.handlers.MessageSwingWorker;
-import client.utility.LineNumberingTextArea;
+import client.utility.LineNumberingTextPane;
 import com.jfoenix.controls.JFXTextField;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
@@ -32,6 +32,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Caret;
 import javax.swing.text.DefaultCaret;
+import javax.swing.text.Document;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -41,6 +42,9 @@ import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
+import client.utility.LinePainter;
+import client.utility.SyntexHighlight;
+import client.utility.AutoSuggestion;
 
 /**
  * Enum for Programming Languages
@@ -50,7 +54,7 @@ enum Language {
 }
 
 public class MainController implements Initializable{
-
+    public boolean DEBUG = false;
     @FXML public TabPane editorTabPane;
     @FXML public TabPane bottomTabPane;
     @FXML public SplitPane verticalSplitPane;
@@ -60,7 +64,7 @@ public class MainController implements Initializable{
     private TextFile textFile;
     private File file;
     private List<String > lines;
-    private JTextArea textArea;
+    private JTextPane textPane;
     private Tab tab1;
     private Tab newTab;
     private SwingNode swingNode ;
@@ -69,7 +73,8 @@ public class MainController implements Initializable{
     private String documentText;
     private String username;
     TextDocumentListener documentListener;
-    LineNumberingTextArea lineNumberingTextArea;
+    LineNumberingTextPane lineNumberingTextPane;
+    AutoSuggestion autoSuggestion;
     Caret caret;
     Client client;
     private int currentVersion;
@@ -83,6 +88,7 @@ public class MainController implements Initializable{
     String stdin ;
     @FXML
     private TextFlow outputTextFlow;
+    private SyntexHighlight syntexHighlight;
 
     /**
      * Creates a Swing textarea and Swing ScrollPane. To make it work inside JavaFx it creates a swingnode
@@ -105,25 +111,25 @@ public class MainController implements Initializable{
         horizontalSplitPane.setDividerPosition(0 , 0.2);
 
         swingNode = new SwingNode();
-        textArea = new JTextArea();
+        textPane = new JTextPane();
         tab1 = new Tab("Untitled");
         tab1.setStyle(" -fx-font-weight: bold; ");
         Font font = new Font("Serif", Font.PLAIN, 18);
-        textArea.setFont(font);
-        //textArea.setForeground(Color.DARK_GRAY);
-        textArea.setBackground(Color.WHITE);
-        textArea.setTabSize(4);
+        textPane.setFont(font);
+        //textPane.setForeground(Color.DARK_GRAY);
+        textPane.setBackground(Color.WHITE);
+        //textPane.setTabSize(4);
 
         caret = new DefaultCaret();
-        textArea.setCaret(caret);
+        textPane.setCaret(caret);
 
-        lineNumberingTextArea = new LineNumberingTextArea(textArea);
+        lineNumberingTextPane = new LineNumberingTextPane(textPane);
 
-        JScrollPane scrollPane = new JScrollPane(textArea);
-        scrollPane.setRowHeaderView(lineNumberingTextArea);
+        JScrollPane scrollPane = new JScrollPane(textPane);
+        scrollPane.setRowHeaderView(lineNumberingTextPane);
 
         documentListener = new TextDocumentListener();
-        textArea.getDocument().addDocumentListener(documentListener);
+        textPane.getDocument().addDocumentListener(documentListener);
 
         swingNode.setContent(scrollPane);
         tab1.setContent(swingNode);
@@ -131,6 +137,22 @@ public class MainController implements Initializable{
         newTab = new Tab("+");
         newTab.setStyle(" -fx-font-weight: bold; ");
         editorTabPane.getTabs().add(newTab);
+
+        LinePainter linePainter = new LinePainter(textPane);   // highlight current line  ///
+        syntexHighlight = new SyntexHighlight(textPane);   // systex coloring //
+        autoSuggestion = new AutoSuggestion(textPane);  // auto suggestion for C //
+
+
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    textPane.getStyledDocument().insertString(0 ," " , null);
+                } catch (BadLocationException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
     }
 
@@ -144,14 +166,16 @@ public class MainController implements Initializable{
          */
         @Override
         public void insertUpdate(DocumentEvent e) {
-            lineNumberingTextArea.updateLineNumbers();
-            synchronized (textArea) {
+            lineNumberingTextPane.updateLineNumbers();
+            syntexHighlight.updateColor(e);
+            autoSuggestion.checkAndShowSuggestion(e);
+            synchronized (textPane) {
                 int changeLength = e.getLength();
                 int offset = e.getOffset();
                 int insert = caret.getDot();
                 String message;
                 try {
-                    String addedText = textArea.getDocument().getText(offset,changeLength);
+                    String addedText = textPane.getDocument().getText(offset,changeLength);
                     String encodedText = Encoding.encode(addedText);
                     currentVersion = client.getVersion();
                     message = "change " + documentName + " " + username + " " + currentVersion + " insert " + encodedText + " " + insert;
@@ -172,8 +196,10 @@ public class MainController implements Initializable{
          */
         @Override
         public void removeUpdate(DocumentEvent e) {
-            lineNumberingTextArea.updateLineNumbers();
-            synchronized (textArea) {
+            lineNumberingTextPane.updateLineNumbers();
+            syntexHighlight.updateColor(e);
+            autoSuggestion.removeSuggestion();
+            synchronized (textPane) {
                 int changeLength = e.getLength();
                 currentVersion=client.getVersion();
                 int offset = e.getOffset();
@@ -194,7 +220,7 @@ public class MainController implements Initializable{
 
         @Override
         public void changedUpdate(DocumentEvent e) {
-            lineNumberingTextArea.updateLineNumbers();
+            lineNumberingTextPane.updateLineNumbers();
         }
     }
 
@@ -236,19 +262,21 @@ public class MainController implements Initializable{
                                int editLength, String username, int version) {
         documentText = Encoding.decode(updatedText);
         int pos = caret.getDot();
-        synchronized (textArea) {
+        synchronized (textPane) {
             if(this.username!=null && !this.username.equals(username)){
-                textArea.getDocument().removeDocumentListener(documentListener);
-                textArea.setText(documentText);
-                textArea.getDocument().addDocumentListener(documentListener);
+                textPane.getDocument().removeDocumentListener(documentListener);
+                textPane.setText(documentText);
+                //Write method for update color and line number;
+                textPane.getDocument().addDocumentListener(documentListener);
                 manageCursor(pos, editPosition, editLength);
             }
             else if(this.username!=null && this.username.equals(username)) {
                 //check if version matches up
                 if(currentVersion<version-1){
-                    textArea.getDocument().removeDocumentListener(documentListener);
-                    textArea.setText(documentText);
-                    textArea.getDocument().addDocumentListener(documentListener);
+                    textPane.getDocument().removeDocumentListener(documentListener);
+                    textPane.setText(documentText);
+                    //Write method for update color and line number;
+                    textPane.getDocument().addDocumentListener(documentListener);
                     caret.setDot(editPosition+editLength);
                 }
 
@@ -270,17 +298,17 @@ public class MainController implements Initializable{
             }
         }
 
-        textArea.setText("");
+        textPane.setText("");
         tab1.setText(file.getName());
         for(String line : lines){
-            textArea.append(line+"\n");
+            append(line + "\n");
         }
 
     }
 
     @FXML
     private void onSave(  ){
-        List<String> newLines = Arrays.asList(textArea.getText().split("\n"));
+        List<String> newLines = Arrays.asList(textPane.getText().split("\n"));
 
         try {
             Files.write(file.toPath() , newLines , StandardOpenOption.TRUNCATE_EXISTING);
@@ -323,22 +351,22 @@ public class MainController implements Initializable{
         //Running code
         if(languageSelected == Language.CPP)
         {
-            compileAndRun = new CompileAndRunCPP(textArea.getText(),stdin);
+            compileAndRun = new CompileAndRunCPP(textPane.getText(),stdin);
             compileAndRun.run();
         }
         else if(languageSelected == Language.JAVA)
         {
-            compileAndRun = new CompileAndRunJava(textArea.getText(),stdin);
+            compileAndRun = new CompileAndRunJava(textPane.getText(),stdin);
             compileAndRun.run();
         }
         else if(languageSelected == Language.PYTHON)
         {
-            compileAndRun = new CompileAndRunPython(textArea.getText(),stdin);
+            compileAndRun = new CompileAndRunPython(textPane.getText(),stdin);
             compileAndRun.run();
         }
         else if(languageSelected == Language.C)
         {
-            compileAndRun = new CompileAndRunC(textArea.getText(),stdin);
+            compileAndRun = new CompileAndRunC(textPane.getText(),stdin);
             compileAndRun.run();
         }
         System.out.println(compileAndRun.getCompileOutput());
@@ -447,8 +475,18 @@ public class MainController implements Initializable{
      */
     public void setDocumentText(String documentText) {
         this.documentText = Encoding.decode(documentText);
-        textArea.getDocument().removeDocumentListener(documentListener);
-        textArea.setText(this.documentText);
-        textArea.getDocument().addDocumentListener(documentListener);
+        textPane.getDocument().removeDocumentListener(documentListener);
+        textPane.setText(this.documentText);
+        textPane.getDocument().addDocumentListener(documentListener);
     }
+
+    public void append(String s) {
+        try {
+            Document doc = textPane.getDocument();
+            doc.insertString(doc.getLength(), s, null);
+        } catch(BadLocationException exc) {
+            exc.printStackTrace();
+        }
+    }
+
 }

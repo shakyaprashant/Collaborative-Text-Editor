@@ -4,10 +4,10 @@ import javax.swing.*;
 import javax.swing.text.Element;
 import java.awt.*;
 
-public class LineNumberingTextArea extends JTextArea {
-    private JTextArea textArea;
+public class LineNumberingTextPane extends JTextPane {
+    private JTextPane textArea;
 
-    public LineNumberingTextArea(JTextArea textArea)
+    public LineNumberingTextPane(JTextPane textArea)
     {
         this.textArea = textArea;
         setBackground(Color.DARK_GRAY);
@@ -30,11 +30,11 @@ public class LineNumberingTextArea extends JTextArea {
         int caretPosition = textArea.getDocument().getLength();
         Element root = textArea.getDocument().getDefaultRootElement();
         StringBuilder lineNumbersTextBuilder = new StringBuilder();
-        lineNumbersTextBuilder.append("1").append(System.lineSeparator());
+        lineNumbersTextBuilder.append(" 1 ").append(System.lineSeparator());
 
         for (int elementIndex = 2; elementIndex < root.getElementIndex(caretPosition) + 2; elementIndex++)
         {
-            lineNumbersTextBuilder.append(elementIndex).append(System.lineSeparator());
+            lineNumbersTextBuilder.append(" "+elementIndex+" ").append(System.lineSeparator());
         }
 
         return lineNumbersTextBuilder.toString();
