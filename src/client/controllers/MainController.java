@@ -35,6 +35,7 @@ import javax.swing.text.DefaultCaret;
 import javax.swing.text.Document;
 import java.awt.*;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -43,7 +44,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 import client.utility.LinePainter;
-import client.utility.SyntexHighlight;
+import client.utility.SyntaxHighlight;
 import client.utility.AutoSuggestion;
 
 /**
@@ -88,7 +89,7 @@ public class MainController implements Initializable{
     String stdin ;
     @FXML
     private TextFlow outputTextFlow;
-    private SyntexHighlight syntexHighlight;
+    private SyntaxHighlight syntaxHighlight;
 
     /**
      * Creates a Swing textarea and Swing ScrollPane. To make it work inside JavaFx it creates a swingnode
@@ -139,7 +140,7 @@ public class MainController implements Initializable{
         editorTabPane.getTabs().add(newTab);
 
         LinePainter linePainter = new LinePainter(textPane);   // highlight current line  ///
-        syntexHighlight = new SyntexHighlight(textPane);   // systex coloring //
+        syntaxHighlight = new SyntaxHighlight(textPane);   // syntax  coloring //
         autoSuggestion = new AutoSuggestion(textPane);  // auto suggestion for C //
 
 
@@ -167,7 +168,7 @@ public class MainController implements Initializable{
         @Override
         public void insertUpdate(DocumentEvent e) {
             lineNumberingTextPane.updateLineNumbers();
-            syntexHighlight.updateColor(e);
+            syntaxHighlight.updateColor(e);
             autoSuggestion.checkAndShowSuggestion(e);
             synchronized (textPane) {
                 int changeLength = e.getLength();
@@ -179,7 +180,7 @@ public class MainController implements Initializable{
                     String encodedText = Encoding.encode(addedText);
                     currentVersion = client.getVersion();
                     message = "change " + documentName + " " + username + " " + currentVersion + " insert " + encodedText + " " + insert;
-                    System.out.println(message);
+                    if(DEBUG) System.out.println(message);
                     sent = true;
                     MessageSwingWorker worker = new MessageSwingWorker(client,
                             message, sent);
@@ -197,7 +198,7 @@ public class MainController implements Initializable{
         @Override
         public void removeUpdate(DocumentEvent e) {
             lineNumberingTextPane.updateLineNumbers();
-            syntexHighlight.updateColor(e);
+            syntaxHighlight.updateColor(e);
             autoSuggestion.removeSuggestion();
             synchronized (textPane) {
                 int changeLength = e.getLength();
@@ -208,7 +209,7 @@ public class MainController implements Initializable{
                         + " " + endPosition;
 
 
-                System.out.println(message);
+                if(DEBUG) System.out.println(message);
 
                 sent = true;
                 MessageSwingWorker worker = new MessageSwingWorker(client,
@@ -232,9 +233,12 @@ public class MainController implements Initializable{
      */
     private void manageCursor(int currentPos, int pivotPosition, int amount) {
 
-            System.out.println("first position: "+caret.getDot());
-            System.out.println("pivot: "+pivotPosition);
-            System.out.println("amount: "+amount);
+        if(DEBUG) {
+            System.out.println("first position: " + caret.getDot());
+            System.out.println("pivot: " + pivotPosition);
+            System.out.println("amount: " + amount);
+        }
+
 
         if (currentPos >= pivotPosition) {
             if (currentPos <= pivotPosition + Math.abs(amount)) {
@@ -247,7 +251,7 @@ public class MainController implements Initializable{
             caret.setDot(currentPos);
         }
 
-        System.out.println("caret moved to: "+caret.getDot());
+        if(DEBUG) System.out.println("caret moved to: "+caret.getDot());
     }
 
     /**
@@ -262,11 +266,15 @@ public class MainController implements Initializable{
                                int editLength, String username, int version) {
         documentText = Encoding.decode(updatedText);
         int pos = caret.getDot();
+        //System.out.println("--+--->  "+(editPosition));
         synchronized (textPane) {
             if(this.username!=null && !this.username.equals(username)){
                 textPane.getDocument().removeDocumentListener(documentListener);
                 textPane.setText(documentText);
                 //Write method for update color and line number;
+                updateColorAndLine(editPosition);
+
+
                 textPane.getDocument().addDocumentListener(documentListener);
                 manageCursor(pos, editPosition, editLength);
             }
@@ -276,6 +284,8 @@ public class MainController implements Initializable{
                     textPane.getDocument().removeDocumentListener(documentListener);
                     textPane.setText(documentText);
                     //Write method for update color and line number;
+                    updateColorAndLine(editPosition);
+
                     textPane.getDocument().addDocumentListener(documentListener);
                     caret.setDot(editPosition+editLength);
                 }
@@ -298,20 +308,41 @@ public class MainController implements Initializable{
             }
         }
 
+        textPane.getDocument().removeDocumentListener(documentListener);
         textPane.setText("");
         tab1.setText(file.getName());
         for(String line : lines){
             append(line + "\n");
         }
+        syntaxHighlight.syntaxColor();
+        lineNumberingTextPane.updateLineNumbers();
+        textPane.getDocument().addDocumentListener(documentListener);
 
     }
 
     @FXML
     private void onSave(  ){
-        List<String> newLines = Arrays.asList(textPane.getText().split("\n"));
+//        List<String> newLines = Arrays.asList(textPane.getText().split("\n"));
+//
+//        try {
+//            Files.write(file.toPath() , newLines , StandardOpenOption.TRUNCATE_EXISTING);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
+        //List<String> newLines = Arrays.asList(textPane.getText().split("\n"));
+
+        // updated code....
+        String newLines = textPane.getText();
         try {
-            Files.write(file.toPath() , newLines , StandardOpenOption.TRUNCATE_EXISTING);
+            //Files.write(file.toPath() , newLines , StandardOpenOption.TRUNCATE_EXISTING)
+//            for(String l: newLines){
+//                System.out.println(l);
+//            }
+
+            FileWriter fileWriter = new FileWriter(file);
+            fileWriter.write(newLines);
+            fileWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -487,6 +518,12 @@ public class MainController implements Initializable{
         } catch(BadLocationException exc) {
             exc.printStackTrace();
         }
+    }
+
+    public void updateColorAndLine(int pos){
+        lineNumberingTextPane.updateLineNumbers();
+        //syntaxHighlight.colorForRemoteUpdate(pos);
+        syntaxHighlight.syntaxColor();
     }
 
 }

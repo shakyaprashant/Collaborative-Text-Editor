@@ -18,8 +18,6 @@ import client.utility.Keywords;
 
 public class AutoSuggestion {
     private final JTextPane textPane;
-    private Window mainWindow;
-    private Window autoSuggestionWindow;
     private ArrayList<String> dictionary;
     private String typedWord;
     private JPopupMenu popupMenu;
@@ -45,6 +43,7 @@ public class AutoSuggestion {
         popupMenu.removeAll();
         int X = 0;
         int Y = 0;
+
         try {
             Rectangle rectangle = textPane.modelToView(textPane.getCaretPosition()+1);
             X = rectangle.x ;
@@ -80,7 +79,7 @@ public class AutoSuggestion {
         try {
             ch = styledDocument.getText(offset , 1).charAt(0);
             System.out.println(ch);
-            if(Character.isLetter(ch) || Character.isDigit(ch) || ch == '_')
+            if( ch>='a' && ch<='z' )
             {
                 int k = offset;
                 String tmp = "";
@@ -90,9 +89,7 @@ public class AutoSuggestion {
                         tmp = ch + tmp;
                         k--;
                     }
-                    else{
-                        break;
-                    }
+                    else{ break; }
                 }
                 typedWord = tmp;
             }
@@ -101,6 +98,7 @@ public class AutoSuggestion {
                 return;
             }
 
+            System.out.println("---->>>"+typedWord);
 
         } catch (BadLocationException e) {
             e.printStackTrace();
@@ -109,15 +107,16 @@ public class AutoSuggestion {
     }
 
     public Boolean getMatchingWords(){
-        if (typedWord.isEmpty()) {
+        if (typedWord.isEmpty() || typedWord.length() <= 0) {
             return false;
         }
 
         boolean suggestionAdded = false;
         for (String word : dictionary) {
+            if( typedWord.length() > word.length()) continue;
             boolean fullymatches = true;
             for (int i = 0; i < typedWord.length(); i++) {
-                if( typedWord.length() > word.length()) continue;
+
                 if (!typedWord.toLowerCase().startsWith(String.valueOf(word.toLowerCase().charAt(i)), i)) {
                     fullymatches = false;
                     break;
@@ -173,7 +172,6 @@ public class AutoSuggestion {
                 }
                 //System.out.println("down key pressed...");
                 startFocusingPopupMenu();
-
             }
         });
     }

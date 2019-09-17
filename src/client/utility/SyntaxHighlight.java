@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import client.utility.Keywords;
 
-public class SyntexHighlight {
+public class SyntaxHighlight {
     private JTextPane textPane;
     private List<String > lines;
     private StyledDocument styledDocument;
@@ -19,7 +19,7 @@ public class SyntexHighlight {
     private Keywords keywords;
     private HashMap< String , Boolean > map_c;
 
-    public SyntexHighlight(JTextPane textPane){
+    public SyntaxHighlight(JTextPane textPane){
         this.textPane = textPane;
         styledDocument  = this.textPane.getStyledDocument();
         simpleAttributeSet = new SimpleAttributeSet();
@@ -31,7 +31,7 @@ public class SyntexHighlight {
 
     }
 
-    public void syntexColor(){
+    public void syntaxColor(){
         Boolean comment = false;
         Boolean isString  = false;
         int len = textPane.getDocument().getLength();
@@ -107,9 +107,7 @@ public class SyntexHighlight {
                     tmp += ch;
                     j++;
                 }
-                else{
-                    break;
-                }
+                else{ break; }
             }
 
             k = i-1;
@@ -119,13 +117,9 @@ public class SyntexHighlight {
                     tmp = ch + tmp;
                     k--;
                 }
-                else{
-                    break;
-                }
+                else{ break; }
             }
-            //System.out.println(tmp);
 
-            final String str = tmp;
             int finalK = k;
             int finalJ = j;
 
@@ -159,6 +153,54 @@ public class SyntexHighlight {
                 }
             }
         });
+    }
+
+    public void colorForRemoteUpdate(int curr_ind){
+        int len = textPane.getDocument().getLength();
+        int i = curr_ind , j , k;
+        char ch = 0;
+        System.out.println((curr_ind)+" <<<------");
+
+        try{
+            String tmp = "" ;
+            j = i;
+            while(j < len){
+                ch = styledDocument.getText(j , 1).charAt(0);
+                if( ch >= 'a' && ch <= 'z' ){
+                    tmp += ch;
+                    j++;
+                }
+                else{ break; }
+            }
+
+            k = i-1;
+            while(k>=0){
+                ch = styledDocument.getText(k , 1).charAt(0);
+                if( ch >= 'a' && ch <= 'z' ){
+                    tmp = ch + tmp;
+                    k--;
+                }
+                else{ break; }
+            }
+            int finalK = k;
+            int finalJ = j;
+
+            System.out.println("------>>>  "+ tmp);
+            String finalTmp = tmp;
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    if(!finalTmp.equals("") && !finalTmp.equals("\n") && map_c.containsKey(finalTmp)){
+                        styledDocument.setCharacterAttributes(finalK+1 , finalJ-finalK-1 , simpleAttributeSet , true);
+                    }
+                    else{
+                        styledDocument.setCharacterAttributes(finalK+ 1, finalJ-finalK-1 , simpleAttributeSet1 , true);
+                    }
+                }
+            });
+        } catch (BadLocationException ex) {
+            ex.printStackTrace();
+        }
     }
 
 
