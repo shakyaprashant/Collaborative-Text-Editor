@@ -9,6 +9,7 @@ import java.util.List;
 import client.utility.Keywords;
 
 public class SyntaxHighlight {
+    public static Boolean STOP_FLAG = false;
     private JTextPane textPane;
     private List<String > lines;
     private StyledDocument styledDocument;
@@ -25,7 +26,7 @@ public class SyntaxHighlight {
         StyleConstants.setForeground(simpleAttributeSet1 , Color.DARK_GRAY);
         keywords = new Keywords();
         map_c = keywords.map_c;
-
+        STOP_FLAG = false;
     }
 
     public void syntaxColor(){
@@ -63,6 +64,7 @@ public class SyntaxHighlight {
     }
 
     public void updateColor(DocumentEvent e){
+        if(STOP_FLAG) return;
 
         int curr_ind = e.getOffset();
         int len = textPane.getDocument().getLength();

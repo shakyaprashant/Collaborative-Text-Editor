@@ -412,7 +412,10 @@ public class MainController implements Initializable{
 
     @FXML
     public void FindReplace(ActionEvent actionEvent) {
+        SyntaxHighlight.STOP_FLAG = true;
+        AutoSuggestion.STOP_FLAG = true;
         FindReplace findReplace = new FindReplace(textPane);
+
     }
 
     @FXML

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import client.utility.Keywords;
 
 public class AutoSuggestion {
+    public static Boolean STOP_FLAG = false;
     private final JTextPane textPane;
     private ArrayList<String> dictionary;
     private String typedWord;
@@ -39,11 +40,12 @@ public class AutoSuggestion {
         dictionary = new ArrayList<>();
         initDictionary();
         addKeyBindingToRequestFocusInPopUpMenu();
-
+        STOP_FLAG = false;
     }
 
 
     public void checkAndShowSuggestion(DocumentEvent documentEvent){
+        if(STOP_FLAG) return;
         popupMenu.setVisible(false);
         popupMenu.removeAll();
         int X = 0;
