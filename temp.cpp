@@ -1,11 +1,9 @@
-
-#include<iostream>
-
-using namespace std;
+ #include<stdio.h>
 
 int main(){
 	
-	int a;
-	cout<<" hello world\n "<<endl;
+	printf("khus..");	
+	printf("hello world\n");
 	return 0;
+
 }

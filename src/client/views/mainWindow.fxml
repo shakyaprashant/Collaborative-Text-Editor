@@ -43,6 +43,11 @@
                     <MenuItem mnemonicParsing="false" onAction="#onRun" text="Run" />
                 </items>
             </Menu>
+            <Menu mnemonicParsing="false" text="Find and Replace">
+                <items>
+                    <MenuItem mnemonicParsing="false" onAction="#FindReplace" text="Find and Replace" />
+                </items>
+            </Menu>
           <Menu mnemonicParsing="false" text="Help">
             <items>
                   <Menu mnemonicParsing="false" />

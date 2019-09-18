@@ -6,6 +6,8 @@ import javafx.stage.Window;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Caret;
+import javax.swing.text.DefaultCaret;
 import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -26,15 +28,18 @@ public class AutoSuggestion {
     private int offset;
 
 
+
     public AutoSuggestion(JTextPane textPane ){
         this.textPane = textPane;
         styledDocument = textPane.getStyledDocument();
         popupMenu = new JPopupMenu();
+
         typedWord = "";
         keywords = new Keywords();
         dictionary = new ArrayList<>();
         initDictionary();
         addKeyBindingToRequestFocusInPopUpMenu();
+
     }
 
 
@@ -113,7 +118,7 @@ public class AutoSuggestion {
 
         boolean suggestionAdded = false;
         for (String word : dictionary) {
-            if( typedWord.length() > word.length()) continue;
+            if( typedWord.length() >= word.length()) continue;
             boolean fullymatches = true;
             for (int i = 0; i < typedWord.length(); i++) {
 
@@ -163,8 +168,8 @@ public class AutoSuggestion {
 //    };
 
     public void addKeyBindingToRequestFocusInPopUpMenu(){
-        textPane.getInputMap(textPane.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN ,0 , true) , "Down released");
-        textPane.getActionMap().put("Down released", new AbstractAction() {
+        textPane.getInputMap( textPane.WHEN_FOCUSED ).put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN ,0 , true) , "Down pressed");
+        textPane.getActionMap().put("Down pressed", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(!popupMenu.isVisible()){
@@ -174,6 +179,8 @@ public class AutoSuggestion {
                 startFocusingPopupMenu();
             }
         });
+
+
     }
 
     public void insertcWord(String word  ,String typedWord,int x){
@@ -183,6 +190,8 @@ public class AutoSuggestion {
             public void run() {
                 try {
                     styledDocument.insertString(x+1 ,tmp , null);
+                    textPane.setCaretPosition(x+1+tmp.length());
+                    removeSuggestion();
                 } catch (BadLocationException e) {
                     e.printStackTrace();
                 }

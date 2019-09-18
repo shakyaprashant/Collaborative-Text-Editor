@@ -2,10 +2,7 @@ package client.utility;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
+import javax.swing.text.*;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
@@ -80,7 +77,6 @@ public class SyntaxHighlight {
 //            }
             if(ch == '{'){
                 insertchar('}' , i+1);
-
                 return ;
             }
             if(ch == '('){
@@ -148,6 +144,7 @@ public class SyntaxHighlight {
             public void run() {
                 try {
                     styledDocument.insertString(pos ,""+ch , null);
+                    textPane.setCaretPosition(pos);
                 } catch (BadLocationException e) {
                     e.printStackTrace();
                 }
@@ -159,7 +156,7 @@ public class SyntaxHighlight {
         int len = textPane.getDocument().getLength();
         int i = curr_ind , j , k;
         char ch = 0;
-        System.out.println((curr_ind)+" <<<------");
+        //System.out.println((curr_ind)+" <<<------");
 
         try{
             String tmp = "" ;
@@ -185,7 +182,7 @@ public class SyntaxHighlight {
             int finalK = k;
             int finalJ = j;
 
-            System.out.println("------>>>  "+ tmp);
+
             String finalTmp = tmp;
             SwingUtilities.invokeLater(new Runnable() {
                 @Override

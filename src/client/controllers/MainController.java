@@ -46,6 +46,7 @@ import java.util.ResourceBundle;
 import client.utility.LinePainter;
 import client.utility.SyntaxHighlight;
 import client.utility.AutoSuggestion;
+import client.utility.FindReplace;
 
 /**
  * Enum for Programming Languages
@@ -157,6 +158,7 @@ public class MainController implements Initializable{
 
     }
 
+
     /**
      * Document Listener for the Text Area
      */
@@ -207,7 +209,6 @@ public class MainController implements Initializable{
                 int endPosition = offset + changeLength;
                 String message = "change " + documentName +" "+username+" " +currentVersion+" remove " + offset
                         + " " + endPosition;
-
 
                 if(DEBUG) System.out.println(message);
 
@@ -407,6 +408,11 @@ public class MainController implements Initializable{
         Text runoutput = new Text(compileAndRun.getRunOutput());
         outputTextFlow.getChildren().clear();
         outputTextFlow.getChildren().addAll(compileoutput,runoutput);
+    }
+
+    @FXML
+    public void FindReplace(ActionEvent actionEvent) {
+        FindReplace findReplace = new FindReplace(textPane);
     }
 
     @FXML
