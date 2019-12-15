@@ -12,8 +12,7 @@ public class LineNumberingTextPane extends JTextPane {
         this.textArea = textArea;
         setBackground(Color.DARK_GRAY);
         setForeground(Color.lightGray);
-        Font font = new Font("Serif", Font.PLAIN, 18);
-        setFont(font);
+        setFontSize("Arial" , 18);
         setEditable(false);
 
     }
@@ -38,5 +37,12 @@ public class LineNumberingTextPane extends JTextPane {
         }
 
         return lineNumbersTextBuilder.toString();
+    }
+
+
+    public  void setFontSize(String fontType ,  int fontSize){
+        Font font = new Font(fontType, Font.PLAIN, fontSize);
+        setFont(font);
+
     }
 }

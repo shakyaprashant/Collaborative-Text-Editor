@@ -39,14 +39,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 import client.utility.LinePainter;
 import client.utility.SyntaxHighlight;
 import client.utility.AutoSuggestion;
 import client.utility.FindReplace;
+import client.utility.Settings;
 
 /**
  * Enum for Programming Languages
@@ -116,8 +115,7 @@ public class MainController implements Initializable{
         textPane = new JTextPane();
         tab1 = new Tab("Untitled");
         tab1.setStyle(" -fx-font-weight: bold; ");
-        Font font = new Font("Serif", Font.PLAIN, 18);
-        textPane.setFont(font);
+        setFontsize( "Arial" ,18);
         //textPane.setForeground(Color.DARK_GRAY);
         textPane.setBackground(Color.WHITE);
         //textPane.setTabSize(4);
@@ -157,6 +155,8 @@ public class MainController implements Initializable{
         });
 
     }
+
+
 
 
     /**
@@ -419,6 +419,12 @@ public class MainController implements Initializable{
     }
 
     @FXML
+    public void settings(ActionEvent actionEvent) {
+        Settings settings = new Settings(this , lineNumberingTextPane);
+
+    }
+
+    @FXML
     private void onAbout(){
 
     }
@@ -534,5 +540,13 @@ public class MainController implements Initializable{
         //syntaxHighlight.colorForRemoteUpdate(pos);
         syntaxHighlight.syntaxColor();
     }
+
+
+    public void  setFontsize(String fontType ,   int fontsize){
+        Font font = new Font(fontType, Font.PLAIN, fontsize);
+        textPane.setFont(font);
+    }
+
+
 
 }

@@ -48,9 +48,13 @@
                     <MenuItem mnemonicParsing="false" onAction="#FindReplace" text="Find and Replace" />
                 </items>
             </Menu>
+            <Menu mnemonicParsing="false" text="Settings">
+                <items>
+                    <MenuItem mnemonicParsing="false" onAction="#settings" text="Settings" />
+                </items>
+            </Menu>
           <Menu mnemonicParsing="false" text="Help">
             <items>
-                  <Menu mnemonicParsing="false" />
               <MenuItem mnemonicParsing="false" onAction="#onAbout" text="About" />
             </items>
           </Menu>

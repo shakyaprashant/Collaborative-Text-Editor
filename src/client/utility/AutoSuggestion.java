@@ -1,22 +1,14 @@
 package client.utility;
 
-import javafx.scene.layout.GridPane;
-import javafx.stage.Window;
-
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.Caret;
-import javax.swing.text.DefaultCaret;
 import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import client.utility.Keywords;
 
 public class AutoSuggestion {
     public static Boolean STOP_FLAG = false;
@@ -27,8 +19,6 @@ public class AutoSuggestion {
     private Keywords keywords;
     private StyledDocument styledDocument;
     private int offset;
-
-
 
     public AutoSuggestion(JTextPane textPane ){
         this.textPane = textPane;
@@ -73,9 +63,7 @@ public class AutoSuggestion {
                 textPane.requestFocusInWindow();
 
             }
-
         }
-
     }
 
 
@@ -104,8 +92,6 @@ public class AutoSuggestion {
                 typedWord = "";
                 return;
             }
-
-            System.out.println("---->>>"+typedWord);
 
         } catch (BadLocationException e) {
             e.printStackTrace();
@@ -147,27 +133,9 @@ public class AutoSuggestion {
         @Override
         public void actionPerformed(ActionEvent e) {
             System.out.println(e.getActionCommand());
-            insertcWord(e.getActionCommand()+" " , typedWord , offset);
+            insertWord(e.getActionCommand()+" " , typedWord , offset);
         }
     };
-
-//    KeyListener popupMenuKeyListener = new KeyListener() {
-//        @Override
-//        public void keyTyped(KeyEvent e) {
-//            System.out.println(e.getKeyChar());
-//        }
-//
-//        @Override
-//        public void keyPressed(KeyEvent e) {
-//            System.out.println(e.getKeyChar());
-//        }
-//
-//        @Override
-//        public void keyReleased(KeyEvent e) {
-//            System.out.println(e.getKeyChar());
-//
-//        }
-//    };
 
     public void addKeyBindingToRequestFocusInPopUpMenu(){
         textPane.getInputMap( textPane.WHEN_FOCUSED ).put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN ,0 , true) , "Down pressed");
@@ -182,10 +150,9 @@ public class AutoSuggestion {
             }
         });
 
-
     }
 
-    public void insertcWord(String word  ,String typedWord,int x){
+    public void insertWord(String word  , String typedWord, int x){
         String tmp = removePrefix(word , typedWord);
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -211,19 +178,17 @@ public class AutoSuggestion {
     }
 
     public void startFocusingPopupMenu(){
-        //System.out.println("insdide focus");
+        //System.out.println("inside focus");
         popupMenu.setVisible(false);
         popupMenu.setVisible(true);
 
     }
-
 
     public void initDictionary(){
         for(String s : keywords.map_c.keySet()){
             dictionary.add(s);
         }
     }
-
 
     public void removeSuggestion(){
         popupMenu.removeAll();

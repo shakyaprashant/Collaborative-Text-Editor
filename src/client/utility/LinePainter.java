@@ -9,11 +9,8 @@ import javax.swing.text.*;
 public class LinePainter implements Highlighter.HighlightPainter, CaretListener, MouseListener, MouseMotionListener
 {
     private JTextComponent component;
-
     private Color color;
-
     private Rectangle lastView;
-
     public LinePainter(JTextComponent component)
     {
         this(component, null);
@@ -24,11 +21,9 @@ public class LinePainter implements Highlighter.HighlightPainter, CaretListener,
     {
         this.component = component;
         setColor( color );
-
         component.addCaretListener( this );
         component.addMouseListener( this );
         component.addMouseMotionListener( this );
-
         try
         {
             component.getHighlighter().addHighlight(0, 0, this);
@@ -49,7 +44,6 @@ public class LinePainter implements Highlighter.HighlightPainter, CaretListener,
         setColor(new Color(red, green, blue));
     }
 
-
     public void paint(Graphics g, int p0, int p1, Shape bounds, JTextComponent c)
     {
         try
@@ -66,7 +60,6 @@ public class LinePainter implements Highlighter.HighlightPainter, CaretListener,
 
     private void resetHighlight()
     {
-
         SwingUtilities.invokeLater(new Runnable()
         {
             public void run()
