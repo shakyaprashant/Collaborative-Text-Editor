@@ -1,74 +1,50 @@
 package client;
 
-import client.SceneController;
+import client.utility.ShowRating;
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
-/**
- * Listens for the update from the server, and handles the message from the
- * server.
- *
- * @author LLPadmin
- *
- */
 public class ClientActionListener extends Thread{
-
     private static boolean DEBUG = true;
     private Client client;
     private Socket socket;
     private BufferedReader in;
-    private final String regex = "(Error: .+)|"
-            + "(alldocs [\\w|\\d]+)|(new [\\w|\\d]+)|(open [\\w|\\d]+\\s(\\d+)\\s?(.+)?)|"
-            + "(change [\\w|\\d]+\\s[\\w|\\d]+\\s(\\d+)\\s(\\d+)\\s(-?\\d+)\\s?(.+)?)|(name [\\d\\w]+)";
-    private final int groupChangeVersion = 8;
-    private final int groupChangePosition = 9;
-    private final int groupChangeLength = 10;
-    private final int groupChangeText = 11;
-    private final int groupOpenVersion = 5;
-    private final int groupOpenText = 6;
+    private final String regex = "(Error: .+)|(change [\\w|\\d]+\\s[\\w|\\d]+\\s(\\d+)\\s(\\d+)\\s(-?\\d+)\\s?(.+)?)|(open [\\w|\\d]+\\s(\\d+)\\s?(.+)?)|(sendQues .+)|" +
+            "(endInterview .+)|(quit)|(sendMessage .+)|(nothing)|(userScore .+)|(getCandScore .+)";
+    private final int groupChangeVersion = 3;
+    private final int groupChangePosition = 4;
+    private final int groupChangeLength = 5;
+    private final int groupChangeText = 6;
+    private final int groupOpenVersion = 8;
+    private final int groupOpenText = 9;
     private SceneController main;
 
-    /**
-     * Creates a new ClientActionListener with a client and a socket
-     *
-     * @param client
-     * @param socket
-     */
     public ClientActionListener(Client client, Socket socket) {
         this.client = client;
         this.socket = socket;
         this.main = client.getSceneController();
     }
 
-    /**
-     * listens for server updates and handle the message
-     * @throws IOException
-     */
     @Override
     public void run(){
 
-        try {
+        try{
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             for (String line = in.readLine(); line != null; line = in.readLine()) {
                 final String input = line;
-                Platform.runLater(new Runnable() {
+                Platform.runLater(new Runnable() { // To allow run method to make changes in JavaFx main thread
                     @Override
                     public void run() {
                         handleMessageFromServer(input);
                     }
                 });
-                //System.out.println("Server Sent-" + line);
             }
-            System.out.println("Out");
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -82,68 +58,38 @@ public class ClientActionListener extends Thread{
         }
     }
 
-    /**
-     *
-     * Handle the message from the server by updating the GUI and the nameOfDocument, textOfDocument as well
-     *
-     * Server-to-Client Message Protocol
-     * message :== (Error|Alldocs | Newdocument | Opendocument | ChangeText)
-     * Error :== error [1-6] .+
-     * Alldocs :== "alldocs " DocumentName
-     * Newdocument:=="new " DocumentName
-     * Opendocument:=="open " DocumentName Version DocumentText
-     * ChangeText :=="change " DocumentName Username Version ChangePosition ChangeLength DocumentText
-     * Version :== Int+
-     * ChangePosition :== Int+
-     * ChangeLength :== -?Int+
-     * DocumentName:==[\\d\\w]+
-     * DocumentText:==(Chars*\n)*
-     * Username :==[\\d\\w]+
-     * Chars:== .+
-     * Int:== [0-9]
-     */
     public void handleMessageFromServer(String input) {
         input = input.trim();
-        if(DEBUG){ System.out.println("Input message the client gets from the server is- " + input);}
+        if(DEBUG){ System.out.println("Input message the client gets from the server is- " + input); }
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(input);
 
         if (!matcher.find()) {
-            // invalid input
-            main.openErrorView("from CAL: regex failure");
+            System.out.println("from CAL: regex failure " + input);
+            //main.openErrorView("from CAL: regex failure");
         }
         String[] tokens = input.split(" ");
 
-        // 'error' message , only update the front-end
         if (tokens[0].equals("Error:")) {
             main.openErrorView(input);
         }
-
-        // "alldocs" message, only update the front-end
-        else if (tokens[0].equals("alldocs")) {
-            ArrayList<String> names = new ArrayList<String>();
-            for (int i = 1; i < tokens.length; i++) {
-                names.add(tokens[i]);
+        else if(tokens[0].equals("sendQues")) {
+            main.setQuestion(input);
+        }
+        else if(tokens[0].equals("sendMessage")) {
+            main.setMessage(input);
+        }
+        else if(tokens[0].equals("userScore")) {
+            if(tokens[1].equals("fail")) {
+                main.openErrorView("User score not added");
             }
-            main.displayOpenDocuments(names);
-
+            else {
+                main.openIntDashboard();
+            }
         }
-        else if (tokens[0].equals("name")){
-            client.setUsername(tokens[1]);
-
-
+        else if(tokens[0].equals("getCandScore")) {
+            ShowRating showRating = new ShowRating(tokens);
         }
-
-        // "Create" a document with valid name, needs to update the front and
-        // back ends
-        else if (tokens[0].equals("new")) {
-            main.switchToDocumentView(tokens[1], "");
-            client.updateDocumentName(tokens[1]);
-            // add for version: set the version to 1
-            client.updateVersion(1);
-        }
-
-        // "Open the document", update both front and end
         else if (tokens[0].equals("open")) {
             client.updateDocumentName(tokens[1]);
             //add for version:
@@ -152,12 +98,11 @@ public class ClientActionListener extends Thread{
             client.updateText(documentText);
             if (DEBUG){System.out.println("The open message gets the document with text:" + documentText);}
             main.switchToDocumentView(tokens[1], documentText);
-
-
-
         }
-
-        // Change the document.
+        else if(tokens[0].equals("endInterview")) {
+            client.sendMessageToServer("quit");
+            main.close();
+        }
         else if (tokens[0].equals("change")) {
             // first, need to check the documents are the same
             if(DEBUG){System.out.println("from CAL: updating document(in ClientActionListener.java)");}
@@ -181,5 +126,4 @@ public class ClientActionListener extends Thread{
         }
 
     }
-
 }

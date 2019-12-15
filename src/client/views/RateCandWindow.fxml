@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane prefHeight="556.0" prefWidth="608.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.RateCandWindow">
+   <children>
+      <Label layoutX="113.0" layoutY="153.0" text="Communication Skill" />
+      <Label layoutX="113.0" layoutY="213.0" text="Technical Proficiency" />
+      <Label layoutX="154.0" layoutY="269.0" text="Attitude" />
+      <JFXComboBox fx:id="commRating" layoutX="391.0" layoutY="148.0" onAction="#commClicked" promptText="Select Rating" />
+      <JFXComboBox fx:id="techRating" layoutX="391.0" layoutY="198.0" onAction="#techClicked" promptText="Select Rating" />
+      <JFXComboBox fx:id="attitRating" layoutX="391.0" layoutY="255.0" onAction="#attitClicked" promptText="Select Rating" />
+      <JFXTextField fx:id="overallScore" labelFloat="true" layoutX="216.0" layoutY="330.0" promptText="Overall Score" unFocusColor="#0d8ae4" />
+      <JFXButton layoutX="260.0" layoutY="406.0" onAction="#submitButtonClicked" prefHeight="36.0" prefWidth="79.0" text="Submit" />
+   </children>
+</AnchorPane>

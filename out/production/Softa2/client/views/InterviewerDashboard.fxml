@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.InterviewerDashboard">
+   <children>
+      <JFXButton buttonType="RAISED" layoutX="225.0" layoutY="129.0" onAction="#addNewCandClicked" style="-fx-background-color: lightblue;" text="Add new Candidate" />
+      <JFXButton buttonType="RAISED" layoutX="393.0" layoutY="191.0" onAction="#createDocumentClicked" style="-fx-background-color: lightblue;" text="Create Document" />
+      <JFXTextField fx:id="documentName" layoutX="103.0" layoutY="185.0" prefHeight="31.0" prefWidth="193.0" />
+      <JFXButton buttonType="RAISED" layoutX="225.0" layoutY="266.0" onAction="#seeCandScoreClicked" style="-fx-background-color: lightblue;" text="See Candidates Scores" />
+   </children>
+</AnchorPane>

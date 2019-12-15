@@ -4,15 +4,30 @@
 <?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
 
-
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.ConnectServer">
+<AnchorPane prefHeight="345.0" prefWidth="546.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.ConnectServer">
    <children>
-      <JFXTextField fx:id="serverIPfield" layoutX="209.0" layoutY="113.0" />
-      <JFXTextField fx:id="portfield" layoutX="216.0" layoutY="185.0" />
-      <JFXButton fx:id="connectButton" layoutX="256.0" layoutY="260.0" onAction="#onClickConnect" text="Connect" />
-      <Label layoutX="63.0" layoutY="134.0" text="Server IP" />
-      <Label layoutX="75.0" layoutY="206.0" text="Port" />
+      <JFXTextField fx:id="serverIPfield" focusColor="#1c4bd9" labelFloat="true" layoutX="148.0" layoutY="82.0" prefHeight="42.0" prefWidth="252.0" promptText="Server IP">
+         <unFocusColor>
+            <LinearGradient endX="1.0" endY="1.0">
+               <stops>
+                  <Stop color="#0fb1f2" />
+                  <Stop color="#d9dce8" offset="1.0" />
+               </stops>
+            </LinearGradient>
+         </unFocusColor></JFXTextField>
+      <JFXTextField fx:id="portfield" focusColor="#1c4bd9" labelFloat="true" layoutX="147.0" layoutY="165.0" prefHeight="31.0" prefWidth="252.0" promptText="Port">
+         <unFocusColor>
+            <LinearGradient endX="1.0" endY="1.0">
+               <stops>
+                  <Stop color="#0fb1f2" />
+                  <Stop color="#d9dce8" offset="1.0" />
+               </stops>
+            </LinearGradient>
+         </unFocusColor></JFXTextField>
+      <JFXButton fx:id="connectButton" buttonType="RAISED" layoutX="214.0" layoutY="241.0" onAction="#onClickConnect" prefHeight="42.0" prefWidth="119.0" ripplerFill="#4dc7f0" style="-fx-background-color: #106bc7; -fx-background-radius: 10; -fx-border-radius: 10;" text="Connect" textFill="WHITE" />
       <Label layoutX="249.0" layoutY="310.0" text="Connection Failed" textFill="#ee1414" visible="false" />
    </children>
 </AnchorPane>

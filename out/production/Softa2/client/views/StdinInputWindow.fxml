@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextArea?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="411.0" prefWidth="631.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.StdinInputController">
+   <children>
+      <Label layoutX="59.0" layoutY="51.0" prefHeight="29.0" prefWidth="84.0" style="-fx-font-size: 15;" text="Enter Stdin" />
+      <JFXTextArea fx:id="stdinTextArea" layoutX="37.0" layoutY="91.0" prefHeight="217.0" prefWidth="559.0" />
+      <JFXButton buttonType="RAISED" layoutX="388.0" layoutY="329.0" onAction="#onRunButtonClicked" text="Run" />
+      <JFXButton layoutX="475.0" layoutY="330.0" onAction="#onCancel" text="Cancel" />
+   </children>
+</AnchorPane>

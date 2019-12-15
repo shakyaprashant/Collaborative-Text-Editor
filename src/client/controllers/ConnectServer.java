@@ -22,6 +22,11 @@ public class ConnectServer {
     private SceneController sceneController;
     private boolean DEBUG = true;
 
+    /**
+     * This method runs when the user clicks on connect button.
+     * @param event
+     * @throws IOException
+     */
     @FXML
     private void onClickConnect(ActionEvent event) throws IOException {
         System.out.println("Connect Button Clicked");
@@ -67,10 +72,19 @@ public class ConnectServer {
         }
 
     }
+
+    /**
+     * Setter for Scene Controller
+     * @param sceneController
+     */
     public void setSceneController(SceneController sceneController) {
         this.sceneController = sceneController;
     }
 
+    /**
+     * Getter for client
+     * @return
+     */
     public Client getClient() {
         return client;
     }

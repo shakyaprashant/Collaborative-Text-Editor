@@ -5,23 +5,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-/**
- * The server_main class will start  to run a server that listens a specific
- * number of port(4444).
- *
- */
+
 public class Server_main {
     private static final boolean DEBUG = true;
     private static final int defaultPort = 5555;
 
     /**
-     * Entry point for starting a Collaborative Editor Server.
-     * Starts the server on the specified port or the default port(4444)
-     * if no port is specified or if arguments don't follow the usage
-     *
-     * Usage: Server_main -p PORT
-     * PORT = desired port number for the server
-     *
+     * Main method of Server
      * @param args
      */
     public static void main(String[] args) {
@@ -39,16 +29,12 @@ public class Server_main {
         }
     }
 
-    /**
-     * Start a Server running on the specified port. Its map field is
-     * initialized as a empty map as no clients have established connection with
-     * the server yet.
-     *
-     * @param port
-     *            The network port on which the server should listen, requires 0
-     *            <= port <= 65535.
-     */
 
+    /**
+     * Starts the server.
+     * @param port
+     * @throws IOException
+     */
     public static void runServer(int port) throws IOException {
         if (DEBUG) {
             System.out.println("I am at runServer().");

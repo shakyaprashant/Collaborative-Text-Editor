@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXPasswordField?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="476.0" prefWidth="415.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.IntSignUp">
+   <children>
+      <Label layoutX="145.0" layoutY="51.0" text="Interviewer SignUp" />
+      <JFXTextField fx:id="usernameField" labelFloat="true" layoutX="91.0" layoutY="142.0" prefHeight="31.0" prefWidth="234.0" promptText="Username" />
+      <JFXPasswordField fx:id="passwordField" labelFloat="true" layoutX="91.0" layoutY="216.0" prefHeight="31.0" prefWidth="234.0" promptText="Password" />
+      <JFXPasswordField fx:id="verifyPasswordField" labelFloat="true" layoutX="91.0" layoutY="296.0" prefHeight="31.0" prefWidth="234.0" promptText="Verify Password" />
+      <JFXButton buttonType="RAISED" layoutX="171.0" layoutY="379.0" onAction="#registerButtonClicked" text="Register" />
+      <Label fx:id="usernameNotAvailLabel" layoutX="91.0" layoutY="173.0" text="Username Not Available" textFill="#f80606" visible="false">
+         <font>
+            <Font size="12.0" />
+         </font>
+      </Label>
+      <Label fx:id="passwordNotMatchLabel" layoutX="91.0" layoutY="327.0" text="Password do not match" textFill="#f80606" visible="false">
+         <font>
+            <Font size="12.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>
